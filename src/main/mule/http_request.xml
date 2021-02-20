@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="69cc7602-c786-421f-b27d-dcbf448cdf96" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="c576cfd5-9eeb-4409-862a-1ad25dc61a93" >
+		<http:request-connection host="localhost" port="8081"/>
+	</http:request-config>
+	<flow name="vm_componentFlow" doc:id="7035cd0e-741c-4cc8-8629-4e645e957dd2" >
+		<http:listener doc:name="Listener" doc:id="d59ac640-abe2-4d56-8249-5c42d83df7cc" config-ref="HTTP_Listener_config" path="/test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1421dade-2b8a-42f0-9a53-ee0bd8d81cfc" message="Before call #[attributes.queryParams.city]"/>
+		<http:request method="GET" doc:name="Request" doc:id="798f0883-7b78-4bb6-b8f3-6d1266914285" config-ref="HTTP_Request_configuration" path="/http-test">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"name" : "Hyderabad"
+}]]]></http:query-params>
+		</http:request>
+		<logger level="INFO" doc:name="Logger" doc:id="a259340b-4035-46ce-b434-348c8fe47d63" message="After call #[attributes.queryParams.city]"/>
+	</flow>
+	<flow name="http_requestFlow" doc:id="598d7e12-7ec3-4ec3-b320-070f12c1842f" >
+		<http:listener doc:name="Listener" doc:id="d2ff9952-40d5-478f-9a6c-ae1e2a8e80c7" config-ref="HTTP_Listener_config" path="/http-test"/>
+		<logger level="INFO" doc:name="Logger" doc:id="03426951-3229-4485-b7b8-1e5875ae03c4" message="#[attributes.queryParams.name]"/>
+		<file:write doc:name="Write" doc:id="f6784185-481d-4c81-b6c2-567381310137" path="C:\Users\nekka\Desktop\users.json" />
+	</flow>
+</mule>
